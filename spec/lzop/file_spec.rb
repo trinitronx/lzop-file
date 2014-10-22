@@ -1,4 +1,3 @@
-require 'lzop-file'
 
 require 'spec_helper'
 
