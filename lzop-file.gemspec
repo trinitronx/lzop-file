@@ -5,12 +5,12 @@ require 'lzop/file/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "lzop-file"
-  spec.version       = Lzop::File::VERSION
+  spec.version       = LZOP::File::VERSION
   spec.authors       = ["James Cuzella"]
   spec.email         = ["james.cuzella@lyraphase.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Gem for reading and writing LZO files (similar to lzop command)}
+  spec.description   = File.join( File.dirname(__FILE__), 'README.md')
+  spec.homepage      = "https://github.com/trinitronx/lzop-file"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -18,6 +18,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "lzoruby", "~> 0.1.3"
+
+  spec.add_development_dependency "rspec"
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
 end
