@@ -19,12 +19,17 @@ describe ::LZOP do
       :F_H_PATH        => 0x00002000,
       :F_MASK          => 0x00003FFF,
 
+      :LZOP_VERSION           => 0x1030,
+      :LZOP_VERSION_STRING    => "1.03",
+      :LZOP_VERSION_DATE      => "Nov 1st 2010",
+      :LZO_VERSION            => 0x2080,
+
       :ADLER32_INIT_VALUE => 1, # This is used currently
       :CRC32_INIT_VALUE   => 0  # This is used currently
     }
   }
   
-  it "should contain constants from lzop/conf.h" do
+  it "should contain important constants from lzop source code" do
     expected_constants.each do |constant, value|
       expect(subject.constants).to include(constant)
       expect(subject.const_get(constant)). to eq value

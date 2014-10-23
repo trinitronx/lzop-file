@@ -1,6 +1,7 @@
 
 require 'spec_helper'
 
+## Test internal class header fields & magic bits
 describe LZOP::File::Header.members do
   
   [ :version, :lib_version, :version_needed_to_extract, :method, 

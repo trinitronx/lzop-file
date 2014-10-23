@@ -19,6 +19,15 @@ module LZOP
   F_H_PATH        = 0x00002000
   F_MASK          = 0x00003FFF
 
+  ## version constants from lzop-1.03/src/version.h
+  # Included for file header compatibility
+  LZOP_VERSION           = 0x1030
+  LZOP_VERSION_STRING    = "1.03"
+  LZOP_VERSION_DATE      = "Nov 1st 2010"
+  # version constant from lzo-2.08/include/lzo/lzoconf.h
+  # This is the latest lzo library version which we will attempt to be compatible to
+  LZO_VERSION            = 0x2080
+
   ADLER32_INIT_VALUE = 1
   CRC32_INIT_VALUE   = 0
 end
@@ -36,7 +45,7 @@ class LZOP::File
     puts "DEBUG Magic bits: #{@@lzop_magic}"
     puts "DEBUG HEADER: #{ @header }"
 
-    @header[:version] = 0x1030
+    @header[:version] = LZOP::LZOP_VERSION
     @header[:lib_version] = 0x2080
     @header[:version_needed_to_extract] = 0x0940
     @header[:method] = 0x02
