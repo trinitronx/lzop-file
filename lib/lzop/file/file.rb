@@ -1,5 +1,5 @@
-
 require 'pp'
+require 'lzoruby'
 
 module LZOP
   ## "header flags" constants from lzop-1.03/src/conf.h
@@ -40,8 +40,11 @@ class LZOP::File
   
   @@lzop_magic = [ 0x89, 0x4c, 0x5a, 0x4f, 0x00, 0x0d, 0x0a, 0x1a, 0x0a ]
 
-  def initialize(filename)
+  def initialize(file_path)
+    @fh = nil # File Handle for writing
     @header = Header.new
+    @filename = File.basename(file_path)
+    @file_path = file_path
     puts "DEBUG Magic bits: #{@@lzop_magic}"
     puts "DEBUG HEADER: #{ @header }"
 
@@ -55,8 +58,8 @@ class LZOP::File
     @header[:mode] = 0x000081a4 # This somehow means 0644 mode... magic happens in lzop-1.03/src/util.c:327 : lzo_uint32 fix_mode_for_header(lzo_uint32 mode)
     # Set mtime_low when we write the file
     @header[:mtime_high] = 0x00000000
-    @header[:file_name_length] = filename.length
-    @header[:file_name] = filename
+    @header[:file_name_length] = @filename.length
+    @header[:file_name] = @filename
     @header[:header_checksum] = (@header[:flags] & LZOP::F_H_CRC32) ? LZOP::CRC32_INIT_VALUE : LZOP::ADLER32_INIT_VALUE
     
     puts "DEBUG: My File Header is:"
@@ -83,6 +86,8 @@ class LZOP::File
     ## 03000001   000081a4 54456306 00000000 0e
 
     lzop_file_mtime = Time.now.strftime('%s').to_i
+    @fh ||= File.open(@header[:file_name], 'wb')
+
     @header[:mtime_low] = lzop_file_mtime
     
 
@@ -101,21 +106,26 @@ class LZOP::File
       @header[:file_name_length], @header[:file_name],
       @header[:header_checksum]
     ]
+    
+    @fh.write( @@lzop_magic.pack("C*") )
+
+    @fh.write(file_header_array.pack(
+          'S>S>S>' +
+          'CC' +
+          'L>' + 
+          (@header[:filter] ? 'L>' : '') + 
+          'L>L>L>' + 
+          'C' + 'A' + @header.file_name.length.to_s + 'L>')
+        )
   end
 
   def write(data)
-    File.open(filename, 'wb') { |f|
-      f.write( lzop_magic.pack("C*") )
-      
-      f.write(file_header_array.pack(
-            'S>S>S>' + 
-            'CC' +
-            'L>' + 
-            (@header[:filter] ? 'L>' : '') + 
-            'L>L>L>' + 
-            'C' + 'A' + @header.file_name.length.to_s + 'L>')
-          )
-      f.write( LZO.compress("Hello World\n" * 100) )
-    }
+    @fh ||= File.open(@file_path, 'wb')
+    
+    write_header
+
+    @fh.write( LZO.compress(data) )
+
+    @fh.close()
   end
 end
