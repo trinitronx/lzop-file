@@ -92,30 +92,16 @@ class LZOP::File
     
 
     # Header fields are separated per-line along with their cooresponding pack directives
-    # Seems that on OSX, lzop uses big-endian mode which gives us a different result 
-    file_header_array = [
-      @header[:version], @header[:lib_version], @header[:version_needed_to_extract],
-      @header[:method], @header[:level],
-      @header[:flags]
-    ]
-    # Optional filter field
-    file_header_array += @header[:filter] if @header[:filter]
-    # Rest of fields
-    file_header_array += [
-      @header[:mode], @header[:mtime_low], @header[:mtime_high],
-      @header[:file_name_length], @header[:file_name],
-      @header[:header_checksum]
-    ]
-    
+    # Seems that on OSX, lzop uses big-endian mode which gives us a different result    
     @fh.write( @@lzop_magic.pack("C*") )
-
-    @fh.write(file_header_array.pack(
-          'S>S>S>' +
-          'CC' +
-          'L>' + 
-          (@header[:filter] ? 'L>' : '') + 
-          'L>L>L>' + 
-          'C' + 'A' + @header.file_name.length.to_s + 'L>')
+    
+    @fh.write(@header.values.compact.pack(
+          'S>S>S>' + # version, lib_version, version_needed_to_extract
+          'CC' +     # method, level
+          'L>' +     # flags
+          (@header[:filter] ? 'L>' : '') + # filter
+          'L>L>L>' + # mode, mtime_low, mtime_high
+          'C' + 'A' + @header.file_name.length.to_s + 'L>') # file_name_length, file_name, header_checksum
         )
   end
 
