@@ -17,6 +17,11 @@ describe 'LZOP::File' do
   # These should never change, so hardcode away...
   let(:expected_lzop_magic) { [ 0x89, 0x4c, 0x5a, 0x4f, 0x00, 0x0d, 0x0a, 0x1a, 0x0a ] }
   let(:uncompressed_file_data) { "Hello World\n" * 100 }
+  let(:filename) { 'lzoptest.lzo' }
+  let(:test_fixture_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', filename) }
+  let(:lzop_test_fixture_file_data) { File.open( test_fixture_path, 'rb').read }
+  let(:tmp_filename) { File.basename(filename, File.extname(filename) ) }
+  let(:tmp_file_path) { File.join( '', 'tmp', tmp_filename) }
 
   subject { LZOP::File }
 
@@ -25,7 +30,10 @@ describe 'LZOP::File' do
   end
 
   it 'writes a correct LZO file header' do
-    pending "TODO"
-    fail
+    my_test_file = subject.new( tmp_file_path )
+    my_test_file.write( uncompressed_file_data )
+    test_file_data = File.open( tmp_file_path, 'rb').read
+
+    expect(test_file_data).to eq lzop_test_fixture_file_data
   end
 end
