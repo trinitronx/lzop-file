@@ -24,9 +24,6 @@ module LZOP
   LZOP_VERSION           = 0x1030
   LZOP_VERSION_STRING    = "1.03"
   LZOP_VERSION_DATE      = "Nov 1st 2010"
-  # version constant from lzo-2.08/include/lzo/lzoconf.h
-  # This is the latest lzo library version which we will attempt to be compatible to
-  LZO_VERSION            = 0x2080
 
   ADLER32_INIT_VALUE = 1
   CRC32_INIT_VALUE   = 0
@@ -49,7 +46,10 @@ class LZOP::File
     puts "DEBUG HEADER: #{ @header }"
 
     @header[:version] = LZOP::LZOP_VERSION
-    @header[:lib_version] = 0x2080
+    # LZO version constant from lzo-2.08/include/lzo/lzoconf.h
+    # The default '0x2080' is the earliest lzo library version which we will attempt to be compatible to if unset
+    # Since lzoruby 0.1.4, we should now have direct access to this constant rather than LZO_VERSION_STRING
+    @header[:lib_version] = LZO::LZO_VERSION.is_a?(Numeric) ? LZO::LZO_VERSION : 0x2080
     @header[:version_needed_to_extract] = 0x0940
     @header[:method] = 0x02
     @header[:level] = 0x01

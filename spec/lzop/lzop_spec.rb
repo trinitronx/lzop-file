@@ -22,7 +22,6 @@ describe ::LZOP do
       :LZOP_VERSION           => 0x1030,
       :LZOP_VERSION_STRING    => "1.03",
       :LZOP_VERSION_DATE      => "Nov 1st 2010",
-      :LZO_VERSION            => 0x2080,
 
       :ADLER32_INIT_VALUE => 1, # This is used currently
       :CRC32_INIT_VALUE   => 0  # This is used currently
