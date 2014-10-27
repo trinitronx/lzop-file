@@ -133,7 +133,6 @@ class LZOP::File
       method = LZOP::M_LZO1X_1_15
       raise LZOP::Error::UnsupportedCompressionMethod, method
     elsif (level <= 6)
-      puts "level is <= 6, so I'm using method: method = LZOP::M_LZO1X_1 (#{LZOP::M_LZO1X_1})"
       method = LZOP::M_LZO1X_1
       level = 5
     elsif (l >= 7 && l <= 9)
