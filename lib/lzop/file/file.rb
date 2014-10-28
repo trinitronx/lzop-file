@@ -60,7 +60,7 @@ class LZOP::File
     @header[:filter] = nil
     @header[:mode] = 0x000081a4 # This somehow means 0644 mode... magic happens in lzop-1.03/src/util.c:327 : lzo_uint32 fix_mode_for_header(lzo_uint32 mode)
     # Set mtime_low when we write the file
-    @header[:mtime_high] = 0x00000000
+    # @header[:mtime_high] = 0x00000000
     @header[:file_name_length] = @filename.length
     @header[:file_name] = @filename
     @header[:header_checksum] = (@header[:flags] & LZOP::F_H_CRC32) ? LZOP::CRC32_INIT_VALUE : LZOP::ADLER32_INIT_VALUE
@@ -96,12 +96,12 @@ class LZOP::File
     @fh ||= File.open(@header[:file_name], 'wb')
 
     @header[:mtime_low] = lzop_file_mtime
-    
+    @header[:mtime_high] = ( lzop_file_mtime.to_i & (0xffffffff << 16 << 16 ) ) >> 16 >> 16
 
     # Header fields are separated per-line along with their cooresponding pack directives
     # Seems that on OSX, lzop uses big-endian mode which gives us a different result, so we'll use '>' directives to pack()
     @fh.write( @@lzop_magic.pack("C*") )
-    
+    # puts "DEBUG: Header.values.compact: #{@header.values.compact}"
     @fh.write(@header.values.compact.pack(
           'S>S>S>' + # version, lib_version, version_needed_to_extract
           'CC' +     # method, level
