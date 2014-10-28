@@ -31,7 +31,7 @@ describe 'LZOP::File' do
 
     # Stub calls to Time.now() with our fake mtime value so the mtime_low test against our test fixture works
     # This is the mtime for when the original uncompressed test fixture file was created
-    @time_now = Time.at(1253934592)
+    @time_now = Time.at(0x544abd86)
   }
 
   it 'uses correct lzop_magic bits' do
@@ -40,15 +40,23 @@ describe 'LZOP::File' do
 
   context 'when given a filename, no options and writing uncompressed test data' do
     
-    before(:each) {
-      dbl = Time
-      allow(dbl).to receive(:now).and_return(@time_now)
-      my_test_file = LZOP::File.new( @tmp_file_path )
-      my_test_file.write( @uncompressed_file_data )
-      @test_file_data = File.open( @tmp_file_path, 'rb').read
-    }
+    
+    # before(:each) {
+    #   allow(Time).to receive(:now).and_return(@time_now)  
+    # }
 
     describe 'the output binary file' do
+      before(:all) {
+        RSpec::Mocks.with_temporary_scope do
+          allow(Time).to receive(:now).and_return(@time_now)  # { |a, b| a + b }
+          # puts "TIME IS: #{Time.now}"
+          # puts "TIME IS: #{Time.now.to_i}"
+          my_test_file = LZOP::File.new( @tmp_file_path )
+          my_test_file.write( @uncompressed_file_data )
+          @test_file_data = File.open( @tmp_file_path, 'rb').read
+        end
+      }
+
       it 'has the correct magic bits' do
         expect( @test_file_data[0..8].unpack('C*') ).to eq @expected_lzop_magic
       end
@@ -86,7 +94,7 @@ describe 'LZOP::File' do
         unless @test_file_data[17..21].unpack('L>').first & LZOP::F_H_FILTER == 0
           pending('Optional header: Filter is not supported by lzop-file')
           fail
-          # expect(@test_file_data[22..25]).to eq 'SOMETHING'
+          # expect(@test_file_data[21..24]).to eq 'SOMETHING'
         end
       end
 
@@ -95,8 +103,8 @@ describe 'LZOP::File' do
           start_byte=22
           end_byte=25
         else
-          start_byte=26
-          end_byte=29
+          start_byte=25
+          end_byte=28
         end
         # puts "start_byte: #{start_byte}"
         # puts "end_byte: #{end_byte}"
@@ -108,19 +116,36 @@ describe 'LZOP::File' do
 
       it 'has the original file mtime in LZO file header' do
         # puts "time_now= #{@time_now}"
-        # allow(Time).to receive(:now) { @time_now }
 
         if @test_file_data[17..21].unpack('L>').first & LZOP::F_H_FILTER == 0
-          start_byte=26
-          end_byte=29
+          mtime_low_start_byte=25
+          mtime_low_end_byte=28
+          mtime_high_start_byte=29
+          mtime_high_end_byte=32
         else
-          start_byte=30
-          end_byte=34
+          mtime_low_start_byte=29
+          mtime_low_end_byte=32
+          mtime_high_start_byte=33
+          mtime_high_end_byte=36
         end
         # puts "start_byte: #{start_byte}"
         # puts "end_byte: #{end_byte}"
+        # puts "mtime_low: #{@test_file_data[start_byte..end_byte].unpack('L>').first.to_s(16)}"
+        # puts "test mtime: #{@lzop_test_fixture_file_data[start_byte..end_byte].unpack('L>').first.to_s(16)}"
+        
+        mtime_low = @test_file_data[mtime_low_start_byte..mtime_low_end_byte].unpack('L>').first
+        mtime_high = @test_file_data[mtime_high_start_byte..mtime_high_end_byte].unpack('L>').first
+        # The testing timestamp has no high bits, so this test should pass:
+        expect(mtime_low).to eq @time_now.to_i
+        expect(mtime_high).to eq 0
 
-        expect(@test_file_data[start_byte..end_byte].unpack('L>').first).to eq @time_now.to_i
+        mtime_fixed = ( mtime_high << 16 << 16 ) | mtime_low
+
+        # puts "mtime_fixed: #{mtime_fixed}"
+        # puts "mtime_fixed: #{mtime_fixed.to_s(16)}"
+
+        expect(mtime_fixed).to eq @time_now.to_i
+        
       end
     end
   end
