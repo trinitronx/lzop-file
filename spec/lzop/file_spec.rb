@@ -1,5 +1,6 @@
-
 require 'spec_helper'
+require 'rspec/mocks'
+require 'rspec/mocks/standalone'
 
 ## TODO: put this in helpers if needed?
 def bin_to_hex(s)
@@ -27,6 +28,10 @@ describe 'LZOP::File' do
     @lzop_test_fixture_file_data = File.open( @test_fixture_path, 'rb').read
     @tmp_filename = File.basename(@filename)
     @tmp_file_path = File.join( '', 'tmp', @tmp_filename)
+
+    # Stub calls to Time.now() with our fake mtime value so the mtime_low test against our test fixture works
+    # This is the mtime for when the original uncompressed test fixture file was created
+    @time_now = Time.at(1253934592)
   }
 
   it 'uses correct lzop_magic bits' do
@@ -34,7 +39,10 @@ describe 'LZOP::File' do
   end
 
   context 'when given a filename, no options and writing uncompressed test data' do
-    before(:all) {
+    
+    before(:each) {
+      dbl = Time
+      allow(dbl).to receive(:now).and_return(@time_now)
       my_test_file = LZOP::File.new( @tmp_file_path )
       my_test_file.write( @uncompressed_file_data )
       @test_file_data = File.open( @tmp_file_path, 'rb').read
@@ -90,8 +98,29 @@ describe 'LZOP::File' do
           start_byte=26
           end_byte=29
         end
+        # puts "start_byte: #{start_byte}"
+        # puts "end_byte: #{end_byte}"
+        # puts "mode: #{@test_file_data[start_byte..end_byte].unpack('L>').first.to_s(16)}"
+        # puts "test: #{@lzop_test_fixture_file_data[start_byte..end_byte].unpack('L>').first.to_s(16)}"
 
         expect(@test_file_data[start_byte..end_byte]).to eq @lzop_test_fixture_file_data[start_byte..end_byte]
+      end
+
+      it 'has the original file mtime in LZO file header' do
+        # puts "time_now= #{@time_now}"
+        # allow(Time).to receive(:now) { @time_now }
+
+        if @test_file_data[17..21].unpack('L>').first & LZOP::F_H_FILTER == 0
+          start_byte=26
+          end_byte=29
+        else
+          start_byte=30
+          end_byte=34
+        end
+        # puts "start_byte: #{start_byte}"
+        # puts "end_byte: #{end_byte}"
+
+        expect(@test_file_data[start_byte..end_byte].unpack('L>').first).to eq @time_now.to_i
       end
     end
   end
