@@ -32,6 +32,9 @@ module LZOP
 
   ADLER32_INIT_VALUE = 1
   CRC32_INIT_VALUE   = 0
+
+  HEADER_SIZE_MIN    =  (9 + 7     + 4 + 8     + 1       + 4)
+  HEADER_SIZE_MAX    =  (9 + 7 + 1 + 8 + 8 + 4 + 1 + 255 + 4)
 end
 
 class LZOP::File
@@ -121,7 +124,12 @@ class LZOP::File
 
     @fh.close()
   end
+  
 
+  ## TODO: read_header() method
+  ## http://fossies.org/dox/lzop-1.03/lzop_8c_source.html#l00836
+  ## http://fossies.org/dox/lzop-1.03/util_8c_source.html#l00220
+  ## https://stuff.mit.edu/afs/sipb/contrib/linux/lib/decompress_unlzo.c
   private
 
   def set_method(level)
