@@ -151,8 +151,8 @@ describe 'LZOP::File' do
         @time_now = Time.at(0x21007dddc)
         RSpec::Mocks.with_temporary_scope do
           allow(Time).to receive(:now).and_return(@time_now)
-          puts "TIME IS: #{Time.now}"
-          puts "TIME IS: #{Time.now.to_i}"
+          # puts "TIME IS: #{Time.now}"
+          # puts "TIME IS: #{Time.now.to_i}"
           my_test_file = LZOP::File.new( @tmp_file_path )
           my_test_file.write( @uncompressed_file_data )
           @test_file_data = File.open( @tmp_file_path, 'rb').read
@@ -160,7 +160,7 @@ describe 'LZOP::File' do
       }
 
       it 'has the original file mtime in LZO file header' do
-        puts "time_now= #{@time_now}"
+        # puts "time_now= #{@time_now}"
 
         if @test_file_data[17..21].unpack('L>').first & LZOP::F_H_FILTER == 0
           mtime_low_start_byte=25
