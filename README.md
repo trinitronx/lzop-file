@@ -1,4 +1,8 @@
-# LZOP::File
+LZOP::File
+==========
+
+[![Build Status](http://img.shields.io/travis/trinitronx/lzop-file.svg)](https://travis-ci.org/trinitronx/lzop-file)
+[![Gratipay](http://img.shields.io/gratipay/trinitronx.svg)](https://www.gratipay.com/trinitronx)
 
 Ruby library for writing [LZOP](http://www.lzop.org/) files.
 
