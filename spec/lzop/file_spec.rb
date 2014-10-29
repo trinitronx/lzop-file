@@ -7,6 +7,8 @@ def bin_to_hex(s)
     s.each_byte.map { |b| b.to_s(16).rjust(2,'0') }.join
 end
 
+@ruby_1_8 = Gem::Version.new(RUBY_VERSION) < Gem::Version.new('1.9') ? true : false
+
 ## Test internal class header fields & magic bits
 describe LZOP::File::Header.members do
   
@@ -14,7 +16,8 @@ describe LZOP::File::Header.members do
     :level, :flags, :filter, :mode, :mtime_low, :mtime_high, 
     :file_name_length, :file_name, :header_checksum
   ].each do |field|
-
+    field = field.to_s if @ruby_1_8
+    
     it { is_expected.to include(field) }
   end
 end

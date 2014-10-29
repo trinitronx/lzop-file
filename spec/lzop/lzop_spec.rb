@@ -30,7 +30,7 @@ describe ::LZOP do
   
   it "should contain important constants from lzop source code" do
     expected_constants.each do |constant, value|
-      expect(subject.constants).to include(constant)
+      expect(subject.const_defined?(constant)).to be_truthy
       expect(subject.const_get(constant)). to eq value
     end
   end
