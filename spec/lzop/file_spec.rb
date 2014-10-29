@@ -7,8 +7,9 @@ def bin_to_hex(s)
     s.each_byte.map { |b| b.to_s(16).rjust(2,'0') }.join
 end
 
-@ruby_1_8 = Gem::Version.new(RUBY_VERSION) < Gem::Version.new('1.9') ? true : false
-
+@ruby_1_8 = Gem::Version.new(String.new(RUBY_VERSION)) < Gem::Version.new('1.9')
+puts "Is this Ruby < 1.9? #{@ruby_1_8}"
+puts Gem::Version.new(String.new(RUBY_VERSION)) < Gem::Version.new('1.9')
 ## Test internal class header fields & magic bits
 describe LZOP::File::Header.members do
   
