@@ -134,6 +134,10 @@ describe 'LZOP::File' do
         expect(mtime_low).to eq @time_now.to_i
         expect(mtime_high).to eq 0
 
+        expect(mtime_low).to eq @lzop_test_fixture_file_data[mtime_low_start_byte..mtime_low_end_byte].unpack('L>').first
+        expect(mtime_high).to eq @lzop_test_fixture_file_data[mtime_high_start_byte..mtime_high_end_byte].unpack('L>').first
+
+        # Combine mtime low & high order bits (for 64-bit unsigned int)
         mtime_fixed = ( mtime_high << 16 << 16 ) | mtime_low
 
         # puts "mtime_fixed: #{mtime_fixed}"
