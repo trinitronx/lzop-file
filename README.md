@@ -1,8 +1,20 @@
-# Lzop::File
+# LZOP::File
 
-TODO: Write a gem description
+Ruby library for writing [LZOP](http://www.lzop.org/) files.
+
+This gem writes the binary file format for `.lzo` or `.lz` files in native Ruby code.
+The [lzoruby](https://bitbucket.org/winebarrel/lzo-ruby/src) gem is used to compress the data.
 
 ## Installation
+
+Note: This gem depends on `lzoruby` which uses native C extensions, and depends on the [lzo library](http://www.oberhumer.com/opensource/lzo/).
+As such, it has dependencies that should probably not be used on JRuby in production.
+
+To install the LZO Library:
+
+ - Ubuntu/Debian: `apt-get install liblzo2-dev`
+ - RedHat/CentOS/Fedora: `yum install lzo-devel`
+ - Mac OSX: `brew install lzo`
 
 Add this line to your application's Gemfile:
 
@@ -20,11 +32,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Writing LZO Compressed files is simple:
+
+    require 'lzop-file'
+    
+    uncompressed_file_data = "Hello World\n" * 100
+    
+    my_test_file = LZOP::File.new( '/tmp/my_test_file.lzo' )
+    my_test_file.write( uncompressed_file_data )
+
+Or to write just the header:
+
+    require 'lzop-file'
+    
+    LZOP::File.new( '/tmp/my_test_file.lzo_header' ).write_header
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/lzop-file/fork )
+1. Fork it ( https://github.com/trinitronx/lzop-file/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
