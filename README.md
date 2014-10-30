@@ -11,8 +11,10 @@ The [lzoruby](https://bitbucket.org/winebarrel/lzo-ruby/src) gem is used to comp
 
 ## Installation
 
-Note: This gem depends on `lzoruby` which uses native C extensions, and depends on the [lzo library](http://www.oberhumer.com/opensource/lzo/).
+Notes: This gem depends on `lzoruby` which uses native C extensions, and depends on the [lzo library](http://www.oberhumer.com/opensource/lzo/).
 As such, it has dependencies that should probably not be used on JRuby in production.
+
+Ruby 1.8.x is not supported due to [Array#pack()](http://ruby-doc.org/core-1.8.7/Array.html#method-i-pack) not supporting the endian-ness modifiers we need.
 
 To install the LZO Library:
 
