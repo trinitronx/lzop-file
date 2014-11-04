@@ -17,7 +17,7 @@ There are known issues with the current implementation with regards to output fi
  - CRC32 or Adler32 checksum is **not** currently written to the output file headers
  - There may be other header bits that are incorrect
  - Ruby 1.8.x is not supported due to [Array#pack()](http://ruby-doc.org/core-1.8.7/Array.html#method-i-pack) not supporting the endian-ness modifiers we need.
- - lzoruby version 0.1.3 does **not** provide `LZO_VERSION` constant directly from the external lzo library, instead it supplies the value of `LZO_VERSION_STRING`.  We will attempt to remain compatible with lzoruby 0.1.3 for now, and fudge the `LZO_VERSION` to latest current for lzo-2.08 `0x2080`.
+ - lzoruby version 0.1.3 does **not** provide `LZO_VERSION` constant directly from the external lzo library, instead it supplies the value of `LZO_VERSION_STRING`.  We will attempt to remain compatible with lzoruby 0.1.3 for now, and fudge the `LZO_VERSION` to latest current for lzo-2.08 `0x2080`.  Hopefully, a [future release of lzopruby](https://bitbucket.org/winebarrel/lzo-ruby/pull-request/1/get-lzo-library-version-from-external/diff) will contain the real external library version ;-)
 
 ## Installation
 
