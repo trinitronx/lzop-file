@@ -9,12 +9,20 @@ Ruby library for writing [LZOP](http://www.lzop.org/) files.
 This gem writes the binary file format for `.lzo` or `.lz` files in native Ruby code.
 The [lzoruby](https://bitbucket.org/winebarrel/lzo-ruby/src) gem is used to compress the data.
 
+## Known Issues
+
+This release of lzop-file is currently not feature-complete & should be treated as a beta release!
+There are known issues with the current implementation with regards to output file compatibility with the `lzop` tool:
+
+ - CRC32 or Adler32 checksum is **not** currently written to the output file headers
+ - There may be other header bits that are incorrect
+ - Ruby 1.8.x is not supported due to [Array#pack()](http://ruby-doc.org/core-1.8.7/Array.html#method-i-pack) not supporting the endian-ness modifiers we need.
+ - lzoruby version 0.1.3 does **not** provide `LZO_VERSION` constant directly from the external lzo library, instead it supplies the value of `LZO_VERSION_STRING`
+
 ## Installation
 
 Notes: This gem depends on `lzoruby` which uses native C extensions, and depends on the [lzo library](http://www.oberhumer.com/opensource/lzo/).
 As such, it has dependencies that should probably not be used on JRuby in production.
-
-Ruby 1.8.x is not supported due to [Array#pack()](http://ruby-doc.org/core-1.8.7/Array.html#method-i-pack) not supporting the endian-ness modifiers we need.
 
 To install the LZO Library:
 
